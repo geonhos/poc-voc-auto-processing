@@ -1,0 +1,32 @@
+# Web Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Database
+sqlalchemy==2.0.23
+alembic==1.12.1
+aiosqlite==0.19.0
+
+# Data Validation
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# LLM & AI
+langchain==0.1.0
+langchain-community==0.0.10
+
+# RAG & Vector DB
+chromadb==0.4.18
+sentence-transformers==2.2.2
+
+# HTTP Client
+httpx==0.25.2
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+
+# Development
+python-dotenv==1.0.0
