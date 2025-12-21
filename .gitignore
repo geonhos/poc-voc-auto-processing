@@ -47,8 +47,6 @@ Thumbs.db
 backend/.venv/
 backend/voc.db
 backend/chroma/
-backend/alembic/versions/*.py
-!backend/alembic/versions/__init__.py
 
 # Logs
 logs/
