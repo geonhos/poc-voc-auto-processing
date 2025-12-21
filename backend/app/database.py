@@ -21,6 +21,9 @@ async_session_maker = async_sessionmaker(
     expire_on_commit=False
 )
 
+# Export as async_session for convenience
+async_session = async_session_maker
+
 # Base class for models
 Base = declarative_base()
 

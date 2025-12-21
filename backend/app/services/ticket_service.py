@@ -8,8 +8,10 @@ import random
 from sqlalchemy import select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.ticket import Ticket, TicketStatus
+from app.models.ticket import Ticket, TicketStatus, Urgency
 from app.schemas.ticket import VOCCreate
+from app.agents.normalizer.agent import NormalizerAgent
+from app.agents.normalizer.schemas import NormalizerInput
 
 
 def generate_ticket_id() -> str:
@@ -41,6 +43,55 @@ class TicketService:
         )
 
         self.db.add(ticket)
+        await self.db.commit()
+        await self.db.refresh(ticket)
+
+        return ticket
+
+    async def normalize_ticket(self, ticket_id: str) -> Optional[Ticket]:
+        """
+        Run normalization on a ticket
+
+        Args:
+            ticket_id: Ticket ID to normalize
+
+        Returns:
+            Updated ticket or None if not found
+        """
+        ticket = await self.get_ticket(ticket_id)
+        if not ticket:
+            return None
+
+        # Update status to ANALYZING
+        ticket.status = TicketStatus.ANALYZING
+        await self.db.commit()
+
+        # Run normalization
+        normalizer = NormalizerAgent()
+        normalizer_input = NormalizerInput(
+            raw_voc=ticket.raw_voc,
+            customer_name=ticket.customer_name,
+            channel=ticket.channel,
+            received_at=ticket.received_at,
+        )
+
+        result = await normalizer.normalize(normalizer_input)
+
+        if result.success and result.data:
+            # Update ticket with normalization result
+            ticket.summary = result.data.summary
+            ticket.suspected_type_primary = result.data.suspected_type.primary_type
+            ticket.suspected_type_secondary = result.data.suspected_type.secondary_type
+            ticket.affected_system = result.data.affected_system
+            ticket.urgency = Urgency(result.data.urgency)
+            # Move to next status (for now, set back to OPEN - will be handled by solver agent later)
+            ticket.status = TicketStatus.OPEN
+        else:
+            # Normalization failed - mark as manual required
+            ticket.status = TicketStatus.MANUAL_REQUIRED
+            if result.error:
+                ticket.reject_reason = f"[정규화 실패] {result.error.message}"
+
         await self.db.commit()
         await self.db.refresh(ticket)
 
