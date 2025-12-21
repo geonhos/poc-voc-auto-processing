@@ -4,6 +4,7 @@ Ticket business logic service
 
 from datetime import datetime
 from typing import List, Optional
+import random
 from sqlalchemy import select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,9 +16,10 @@ def generate_ticket_id() -> str:
     """Generate ticket ID in format VOC-YYYYMMDD-XXXX"""
     now = datetime.now()
     date_str = now.strftime("%Y%m%d")
-    # TODO: Implement proper sequence number generation
-    # For now, use timestamp
-    seq = now.strftime("%H%M")
+    # Use microseconds + random for uniqueness
+    microsec = now.microsecond % 10000  # 0-9999
+    rand = random.randint(0, 99)  # 0-99
+    seq = f"{microsec:04d}{rand:02d}"[:4]  # Take first 4 digits
     return f"VOC-{date_str}-{seq}"
 
 
