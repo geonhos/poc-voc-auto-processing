@@ -1,0 +1,37 @@
+{
+  "scenario_id": "S3",
+  "description": "결제 취소 버튼 불편 (business_improvement)",
+  "service": "OrderService",
+  "logs": [
+    {
+      "timestamp": "2024-01-15T11:00:00.000Z",
+      "level": "INFO",
+      "service": "OrderService",
+      "message": "Order detail page accessed",
+      "metadata": {
+        "order_id": "ORD-20240114-123",
+        "user_id": "USER-11111"
+      }
+    },
+    {
+      "timestamp": "2024-01-15T11:00:30.000Z",
+      "level": "INFO",
+      "service": "OrderService",
+      "message": "Order detail page accessed",
+      "metadata": {
+        "order_id": "ORD-20240114-123",
+        "user_id": "USER-11111"
+      }
+    },
+    {
+      "timestamp": "2024-01-15T11:01:00.000Z",
+      "level": "INFO",
+      "service": "OrderService",
+      "message": "Order detail page accessed",
+      "metadata": {
+        "order_id": "ORD-20240114-123",
+        "user_id": "USER-11111"
+      }
+    }
+  ]
+}

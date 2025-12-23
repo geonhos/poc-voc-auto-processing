@@ -1,0 +1,50 @@
+{
+  "scenario_id": "S1",
+  "description": "결제 API 타임아웃 (integration_error)",
+  "service": "PaymentService",
+  "logs": [
+    {
+      "timestamp": "2024-01-15T18:30:00.000Z",
+      "level": "INFO",
+      "service": "PaymentService",
+      "message": "Payment request initiated",
+      "metadata": {
+        "transaction_id": "TXN-20240115-001",
+        "amount": 50000,
+        "user_id": "USER-12345"
+      }
+    },
+    {
+      "timestamp": "2024-01-15T18:30:00.100Z",
+      "level": "INFO",
+      "service": "PaymentService",
+      "message": "Calling external payment gateway",
+      "metadata": {
+        "transaction_id": "TXN-20240115-001",
+        "gateway": "PaymentGateway"
+      }
+    },
+    {
+      "timestamp": "2024-01-15T18:30:12.300Z",
+      "level": "ERROR",
+      "service": "PaymentService",
+      "message": "External API timeout: PaymentGateway did not respond within threshold",
+      "error_code": "EXTERNAL_TIMEOUT",
+      "metadata": {
+        "transaction_id": "TXN-20240115-001",
+        "duration_ms": 12300,
+        "threshold_ms": 5000,
+        "gateway": "PaymentGateway"
+      }
+    },
+    {
+      "timestamp": "2024-01-15T18:30:12.350Z",
+      "level": "WARN",
+      "service": "PaymentService",
+      "message": "Payment marked as failed due to gateway timeout",
+      "metadata": {
+        "transaction_id": "TXN-20240115-001"
+      }
+    }
+  ]
+}

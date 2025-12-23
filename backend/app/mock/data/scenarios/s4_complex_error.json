@@ -1,0 +1,39 @@
+{
+  "scenario_id": "S4",
+  "description": "복합 오류 - 연동 + 코드 (integration_error + code_error)",
+  "service": "PaymentService",
+  "logs": [
+    {
+      "timestamp": "2024-01-15T15:00:00.000Z",
+      "level": "INFO",
+      "service": "PaymentService",
+      "message": "Payment request initiated",
+      "metadata": {
+        "transaction_id": "TXN-20240115-002"
+      }
+    },
+    {
+      "timestamp": "2024-01-15T15:00:05.000Z",
+      "level": "ERROR",
+      "service": "PaymentService",
+      "message": "External payment gateway returned error",
+      "error_code": "GATEWAY_ERROR",
+      "metadata": {
+        "transaction_id": "TXN-20240115-002",
+        "gateway_response_code": "500",
+        "gateway": "PaymentGateway"
+      }
+    },
+    {
+      "timestamp": "2024-01-15T15:00:05.100Z",
+      "level": "ERROR",
+      "service": "PaymentService",
+      "message": "Unhandled exception while processing gateway error",
+      "error_code": "UNHANDLED_EXCEPTION",
+      "stack_trace": "java.lang.IllegalStateException: Unexpected response format\n\tat com.example.PaymentService.handleGatewayResponse(PaymentService.java:200)",
+      "metadata": {
+        "transaction_id": "TXN-20240115-002"
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "scenario_id": "S2",
+  "description": "NullPointerException 발생 (code_error)",
+  "service": "RefundService",
+  "logs": [
+    {
+      "timestamp": "2024-01-15T10:15:00.000Z",
+      "level": "INFO",
+      "service": "RefundService",
+      "message": "Refund request received",
+      "metadata": {
+        "order_id": "ORD-20240110-999",
+        "user_id": "USER-67890"
+      }
+    },
+    {
+      "timestamp": "2024-01-15T10:15:00.050Z",
+      "level": "ERROR",
+      "service": "RefundService",
+      "message": "NullPointerException while processing refund",
+      "error_code": "NPE_ERROR",
+      "stack_trace": "java.lang.NullPointerException\n\tat com.example.RefundService.processRefund(RefundService.java:142)\n\tat com.example.RefundController.handleRefund(RefundController.java:58)",
+      "metadata": {
+        "order_id": "ORD-20240110-999"
+      }
+    },
+    {
+      "timestamp": "2024-01-15T10:20:00.000Z",
+      "level": "ERROR",
+      "service": "RefundService",
+      "message": "NullPointerException while processing refund",
+      "error_code": "NPE_ERROR",
+      "stack_trace": "java.lang.NullPointerException\n\tat com.example.RefundService.processRefund(RefundService.java:142)\n\tat com.example.RefundController.handleRefund(RefundController.java:58)",
+      "metadata": {
+        "order_id": "ORD-20240110-999"
+      }
+    }
+  ]
+}

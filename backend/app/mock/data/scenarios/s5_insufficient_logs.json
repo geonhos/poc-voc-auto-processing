@@ -1,0 +1,16 @@
+{
+  "scenario_id": "S5",
+  "description": "로그 부족 케이스 (MANUAL_REQUIRED)",
+  "service": "MainService",
+  "logs": [
+    {
+      "timestamp": "2024-01-15T09:00:00.000Z",
+      "level": "INFO",
+      "service": "MainService",
+      "message": "User session started",
+      "metadata": {
+        "user_id": "USER-99999"
+      }
+    }
+  ]
+}
