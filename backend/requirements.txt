@@ -19,7 +19,7 @@ langchain-community==0.0.10
 
 # RAG & Vector DB
 chromadb==0.4.18
-sentence-transformers==2.2.2
+sentence-transformers>=5.0.0
 
 # HTTP Client
 httpx==0.25.2

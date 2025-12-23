@@ -18,6 +18,12 @@ class Settings(BaseSettings):
     # Slack
     slack_webhook_url: str = ""
 
+    # RAG & Vector DB
+    chroma_persist_directory: str = "./data/chroma"
+    embedding_model: str = "paraphrase-multilingual-MiniLM-L12-v2"
+    similarity_top_k: int = 5
+    similarity_threshold: float = 0.7
+
     # Application
     debug: bool = True
     log_level: str = "INFO"
