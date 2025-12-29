@@ -1,0 +1,28 @@
+/**
+ * Form Field Styles
+ */
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: var(--spacing-field);
+}
+
+.form-field label {
+  display: block;
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  color: var(--gray-900);
+}
+
+.form-field label.required::after {
+  content: ' *';
+  color: var(--error);
+}
+
+.form-field .error-message {
+  color: var(--error);
+  font-size: var(--font-size-small);
+  margin-top: 4px;
+}

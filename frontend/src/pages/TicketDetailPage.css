@@ -1,0 +1,380 @@
+/**
+ * Ticket Detail Page Styles
+ */
+
+.breadcrumb {
+  display: inline-block;
+  font-size: var(--font-size-small);
+  color: #6B7280;
+  margin-bottom: 16px;
+  text-decoration: none;
+}
+
+.breadcrumb:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.ticket-header-card {
+  background-color: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: var(--spacing-section);
+}
+
+.ticket-id-large {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--gray-900);
+  margin-bottom: 12px;
+}
+
+.ticket-header-meta {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ticket-timestamps {
+  font-size: var(--font-size-small);
+  color: #6B7280;
+}
+
+/* VOC Section */
+.voc-section {
+  background-color: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: var(--spacing-section);
+}
+
+.voc-section h3 {
+  font-size: var(--font-size-section);
+  font-weight: bold;
+  color: var(--gray-900);
+  margin-bottom: 12px;
+}
+
+.voc-meta {
+  font-size: var(--font-size-small);
+  color: #6B7280;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.voc-content {
+  font-size: var(--font-size-body);
+  color: var(--gray-700);
+  line-height: 1.6;
+  margin-top: 16px;
+  white-space: pre-wrap;
+}
+
+/* Analysis Section */
+.analysis-section {
+  background-color: white;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: var(--spacing-section);
+}
+
+.analysis-section h3 {
+  font-size: var(--font-size-section);
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.analyzing-state {
+  text-align: center;
+  padding: 32px 0;
+}
+
+.analyzing-state .spinner {
+  margin: 0 auto 16px;
+}
+
+.analyzing-hint {
+  font-size: var(--font-size-small);
+  color: var(--gray-700);
+  margin-top: 8px;
+}
+
+.confidence-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.progress-bar {
+  flex: 1;
+  max-width: 200px;
+  height: 12px;
+  background-color: var(--gray-200);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  transition: width 0.3s;
+}
+
+.progress.high {
+  background-color: var(--success);
+}
+
+.progress.medium {
+  background-color: var(--warning);
+}
+
+.progress.low {
+  background-color: var(--error);
+}
+
+.problem-types {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.problem-type-card {
+  flex: 1;
+  background-color: #DBEAFE;
+  padding: 12px;
+  border-radius: var(--radius-md);
+}
+
+.problem-type-card strong {
+  display: block;
+  color: #1D4ED8;
+  font-size: var(--font-size-small);
+  margin-bottom: 4px;
+}
+
+.problem-type-card p {
+  color: #1D4ED8;
+  margin: 0;
+}
+
+.affected-system {
+  font-size: var(--font-size-body);
+  color: var(--gray-700);
+  background-color: #F3F4F6;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.affected-system span {
+  font-weight: 500;
+}
+
+/* Summary Section */
+.summary-section {
+  background-color: #EFF6FF;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: var(--spacing-section);
+}
+
+.summary-section h3 {
+  font-size: var(--font-size-section);
+  font-weight: bold;
+  color: #1E40AF;
+  margin-bottom: 8px;
+}
+
+.summary-section p {
+  color: #1E40AF;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Evidence Section */
+.evidence-section {
+  background-color: #ECFDF5;
+  border: 1px solid var(--success);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: var(--spacing-section);
+}
+
+.evidence-section h3 {
+  font-size: var(--font-size-section);
+  font-weight: bold;
+  color: #065F46;
+  margin-bottom: 8px;
+}
+
+.evidence-section p {
+  color: #065F46;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* Action Section */
+.action-section {
+  background-color: #FFFBEB;
+  border: 1px solid #F59E0B;
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: var(--spacing-section);
+}
+
+.action-section h3 {
+  font-size: var(--font-size-section);
+  font-weight: bold;
+  color: #92400E;
+  margin-bottom: 8px;
+}
+
+.action-section p {
+  color: #92400E;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Admin Actions */
+.admin-actions {
+  background-color: white;
+  border-top: 2px solid var(--gray-200);
+  padding: 24px;
+  margin-top: var(--spacing-section);
+}
+
+.admin-actions h3 {
+  text-align: center;
+  font-size: var(--font-size-section);
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.btn-approve {
+  background-color: var(--success);
+  color: white;
+  min-width: 120px;
+  min-height: 44px;
+}
+
+.btn-approve:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+.btn-reject {
+  background-color: var(--error);
+  color: white;
+  min-width: 120px;
+  min-height: 44px;
+}
+
+.btn-reject:hover:not(:disabled) {
+  background-color: #B91C1C;
+}
+
+.btn-reanalyze {
+  background-color: #6B7280;
+  color: white;
+  min-width: 120px;
+  min-height: 44px;
+}
+
+.btn-reanalyze:hover:not(:disabled) {
+  background-color: #4B5563;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  border-radius: var(--radius-md);
+  max-width: 500px;
+  width: 90%;
+  box-shadow: var(--shadow-md);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: var(--font-size-section);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--gray-700);
+  padding: 0;
+  min-width: auto;
+  min-height: auto;
+}
+
+.modal-close:hover {
+  color: var(--gray-900);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-body p {
+  margin-bottom: 12px;
+}
+
+.modal-warning {
+  color: var(--error);
+  font-size: var(--font-size-small);
+}
+
+.modal-body label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.required-mark {
+  color: var(--error);
+}
+
+.modal-body textarea {
+  width: 100%;
+  height: 120px;
+  margin-bottom: 4px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px;
+  border-top: 1px solid var(--gray-200);
+}

@@ -1,0 +1,94 @@
+/**
+ * Badge Styles
+ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* Status Badges */
+.badge-status.badge-OPEN {
+  background-color: #F3F4F6;
+  color: #6B7280;
+}
+
+.badge-status.badge-ANALYZING {
+  background-color: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.badge-status.badge-WAITING_CONFIRM {
+  background-color: #FEF3C7;
+  color: #D97706;
+}
+
+.badge-status.badge-DONE {
+  background-color: #D1FAE5;
+  color: #059669;
+}
+
+.badge-status.badge-MANUAL_REQUIRED {
+  background-color: #FEE2E2;
+  color: #DC2626;
+}
+
+.badge-status.badge-REJECTED {
+  background-color: #F3F4F6;
+  color: #6B7280;
+}
+
+/* Urgency Badges */
+.badge-urgency {
+  font-weight: 600;
+}
+
+.badge-urgency.badge-high {
+  background-color: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #DC2626;
+}
+
+.badge-urgency.badge-high::before {
+  content: '🔴';
+  margin-right: 2px;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.badge-urgency.badge-medium {
+  background-color: #FEF3C7;
+  color: #D97706;
+  border: 1px solid #D97706;
+}
+
+.badge-urgency.badge-medium::before {
+  content: '🟡';
+  margin-right: 2px;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.badge-urgency.badge-low {
+  background-color: #D1FAE5;
+  color: #059669;
+  border: 1px solid #059669;
+}
+
+.badge-urgency.badge-low::before {
+  content: '🟢';
+  margin-right: 2px;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}

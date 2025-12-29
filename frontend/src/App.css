@@ -1,0 +1,86 @@
+/**
+ * App Layout
+ */
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.app-header {
+  background-color: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app-header-content {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-padding-x);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--gray-900);
+  text-decoration: none;
+}
+
+.app-logo:hover {
+  color: var(--primary);
+}
+
+.app-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.app-nav a {
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  color: var(--gray-700);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.app-nav a:hover {
+  background-color: var(--gray-50);
+  color: var(--primary);
+}
+
+.app-nav a.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+/* Main Content */
+.app-main {
+  flex: 1;
+  padding: var(--spacing-padding-y) 0;
+}
+
+.page-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-padding-x);
+}
+
+.page-title {
+  font-size: var(--font-size-header);
+  font-weight: bold;
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-field);
+}
