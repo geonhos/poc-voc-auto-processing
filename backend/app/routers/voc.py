@@ -14,11 +14,19 @@ from app.models.ticket import TicketStatus
 router = APIRouter(prefix="/voc", tags=["voc"])
 
 
-async def run_normalization(ticket_id: str):
-    """Background task to run normalization"""
+async def run_normalization_and_solve(ticket_id: str):
+    """Background task to run normalization and solver"""
     async with async_session() as db:
         service = TicketService(db)
-        await service.normalize_ticket(ticket_id)
+
+        # Step 1: Normalize the ticket
+        ticket = await service.normalize_ticket(ticket_id)
+        if not ticket:
+            return
+
+        # Step 2: If normalization succeeded, run solver
+        if ticket.status == TicketStatus.OPEN:
+            await service.solve_ticket(ticket_id, max_retries=2)
 
 
 @router.post("", response_model=TicketCreateResponse, status_code=status.HTTP_201_CREATED)
@@ -41,8 +49,8 @@ async def create_voc(
         # Create ticket
         ticket = await service.create_ticket(voc)
 
-        # Run normalization in background
-        background_tasks.add_task(run_normalization, ticket.ticket_id)
+        # Run normalization and solver in background
+        background_tasks.add_task(run_normalization_and_solve, ticket.ticket_id)
 
         return TicketCreateResponse(
             ticket_id=ticket.ticket_id,

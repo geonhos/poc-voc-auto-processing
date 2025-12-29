@@ -12,6 +12,9 @@ from app.models.ticket import Ticket, TicketStatus, Urgency
 from app.schemas.ticket import VOCCreate
 from app.agents.normalizer.agent import NormalizerAgent
 from app.agents.normalizer.schemas import NormalizerInput
+from app.agents.solver import get_solver_agent, SolverAgentInput
+from app.rag.schemas import VocDocument
+from app.services.rag_service import get_rag_service
 
 
 def generate_ticket_id() -> str:
@@ -96,6 +99,139 @@ class TicketService:
         await self.db.refresh(ticket)
 
         return ticket
+
+    async def solve_ticket(self, ticket_id: str, max_retries: int = 2) -> Optional[Ticket]:
+        """
+        Run Solver Agent on a ticket
+
+        Args:
+            ticket_id: Ticket ID to solve
+            max_retries: Maximum retry attempts
+
+        Returns:
+            Updated ticket or None if not found
+        """
+        ticket = await self.get_ticket(ticket_id)
+        if not ticket:
+            return None
+
+        # Can only solve OPEN tickets (after normalization)
+        if ticket.status != TicketStatus.OPEN:
+            return ticket
+
+        # Update status to ANALYZING
+        ticket.status = TicketStatus.ANALYZING
+        await self.db.commit()
+
+        # Retry logic
+        for attempt in range(max_retries + 1):
+            try:
+                # Run Solver Agent
+                solver = get_solver_agent()
+                solver_input = SolverAgentInput(
+                    ticket_id=ticket.ticket_id,
+                    raw_voc=ticket.raw_voc,
+                    received_at=ticket.received_at,
+                )
+
+                result = await solver.solve(solver_input)
+
+                # Update ticket with solver result
+                ticket.agent_decision_primary = result.problem_type_primary
+                ticket.agent_decision_secondary = result.problem_type_secondary
+                ticket.affected_system = result.affected_system or ticket.affected_system
+                ticket.decision_confidence = result.confidence.overall
+
+                # Store detailed decision reason
+                ticket.decision_reason = {
+                    "root_cause_analysis": result.root_cause_analysis,
+                    "evidence_summary": result.evidence_summary,
+                    "confidence_breakdown": {
+                        "error_pattern_clarity": result.confidence.error_pattern_clarity,
+                        "log_voc_correlation": result.confidence.log_voc_correlation,
+                        "similar_case_match": result.confidence.similar_case_match,
+                        "system_info_availability": result.confidence.system_info_availability,
+                    },
+                    "similar_cases_used": result.similar_cases_used,
+                    "log_summary": result.log_summary,
+                }
+
+                # Store action proposal
+                ticket.action_proposal = {
+                    "action_type": result.action_proposal.action_type,
+                    "title": result.action_proposal.title,
+                    "description": result.action_proposal.description,
+                    "target_system": result.action_proposal.target_system,
+                    "contact_info": result.action_proposal.contact_info,
+                    "code_location": result.action_proposal.code_location,
+                    "error_details": result.action_proposal.error_details,
+                    "business_impact": result.action_proposal.business_impact,
+                    "suggested_improvement": result.action_proposal.suggested_improvement,
+                }
+
+                ticket.analyzed_at = result.analyzed_at
+
+                # Set final status based on solver state
+                if result.state == "WAITING_CONFIRM":
+                    ticket.status = TicketStatus.WAITING_CONFIRM
+                else:  # MANUAL_REQUIRED
+                    ticket.status = TicketStatus.MANUAL_REQUIRED
+
+                await self.db.commit()
+                await self.db.refresh(ticket)
+
+                # If analysis succeeded and confidence is high, save to RAG for future learning
+                if result.state == "WAITING_CONFIRM":
+                    await self._save_to_rag(ticket, result)
+
+                return ticket
+
+            except Exception as e:
+                # On last retry, mark as manual required
+                if attempt == max_retries:
+                    ticket.status = TicketStatus.MANUAL_REQUIRED
+                    ticket.reject_reason = f"[분석 실패] {str(e)}"
+                    await self.db.commit()
+                    await self.db.refresh(ticket)
+                    return ticket
+                # Otherwise, retry
+                continue
+
+        return ticket
+
+    async def _save_to_rag(self, ticket: Ticket, solver_result) -> None:
+        """
+        Save resolved ticket to RAG vector database for future learning
+
+        Args:
+            ticket: Ticket with solver results
+            solver_result: SolverAgentOutput
+        """
+        try:
+            # Only save high-confidence resolutions
+            if solver_result.confidence.overall < 0.7:
+                return
+
+            # Create VOC document
+            voc_doc = VocDocument(
+                ticket_id=ticket.ticket_id,
+                raw_voc=ticket.raw_voc,
+                summary=ticket.summary,
+                problem_type_primary=solver_result.problem_type_primary,
+                problem_type_secondary=solver_result.problem_type_secondary,
+                affected_system=solver_result.affected_system,
+                resolution=solver_result.action_proposal.description,
+                confidence=solver_result.confidence.overall,
+                resolved_at=solver_result.analyzed_at,
+            )
+
+            # Add to vector database
+            rag_service = get_rag_service()
+            rag_service.add_voc_case(voc_doc)
+
+        except Exception as e:
+            # Log error but don't fail the ticket update
+            print(f"Failed to save ticket {ticket.ticket_id} to RAG: {e}")
 
     async def get_ticket(self, ticket_id: str) -> Optional[Ticket]:
         """Get ticket by ID"""

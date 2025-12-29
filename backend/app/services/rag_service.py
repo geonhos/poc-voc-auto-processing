@@ -41,6 +41,10 @@ class RagService:
         context = self._retriever.get_context_for_agent(voc_text, top_k=top_k)
         return context.to_prompt_context()
 
+    def add_voc_case(self, document: VocDocument) -> None:
+        """Add a VOC case document to the knowledge base"""
+        self._retriever.add_resolved_case(document)
+
     def add_resolved_ticket(
         self,
         ticket_id: str,
@@ -63,7 +67,7 @@ class RagService:
             resolution=resolution,
             confidence=confidence,
         )
-        self._retriever.add_resolved_case(document)
+        self.add_voc_case(document)
 
     def get_document_count(self) -> int:
         """Get total number of documents in vector store"""
