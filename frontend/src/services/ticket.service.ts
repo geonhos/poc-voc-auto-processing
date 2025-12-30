@@ -3,19 +3,30 @@
  */
 
 import { apiClient } from './api.service';
-import { Ticket } from '../types/ticket.types';
+import type { Ticket, TicketStatus, Urgency } from '../types/ticket.types';
+import type { ConfirmTicketRequest, RejectTicketRequest } from '../types/api.types';
 
 export interface TicketListParams {
-  skip?: number;
+  status?: TicketStatus[];
+  urgency?: Urgency;
+  page?: number;
   limit?: number;
+}
+
+export interface TicketListResponse {
+  tickets: Ticket[];
+  total_count: number;
+  page: number;
+  limit: number;
+  total_pages: number;
 }
 
 export const ticketService = {
   /**
-   * Get all tickets
+   * Get all tickets with pagination and filters
    */
-  async getTickets(params?: TicketListParams): Promise<Ticket[]> {
-    const response = await apiClient.get<Ticket[]>('/tickets', { params });
+  async getTickets(params?: TicketListParams): Promise<TicketListResponse> {
+    const response = await apiClient.get<TicketListResponse>('/api/v1/tickets', { params });
     return response.data;
   },
 
@@ -23,28 +34,42 @@ export const ticketService = {
    * Get a single ticket by ID
    */
   async getTicket(ticketId: string): Promise<Ticket> {
-    const response = await apiClient.get<Ticket>(`/tickets/${ticketId}`);
+    const response = await apiClient.get<Ticket>(`/api/v1/tickets/${ticketId}`);
     return response.data;
   },
 
   /**
-   * Approve a ticket (WAITING_CONFIRM → DONE)
+   * Confirm a ticket (WAITING_CONFIRM → DONE)
    */
-  async approveTicket(ticketId: string): Promise<void> {
-    await apiClient.post(`/tickets/${ticketId}/approve`);
+  async confirmTicket(ticketId: string, assignee?: string): Promise<Ticket> {
+    const data: ConfirmTicketRequest = { assignee };
+    const response = await apiClient.post<Ticket>(`/api/v1/tickets/${ticketId}/confirm`, data);
+    return response.data;
   },
 
   /**
    * Reject a ticket (WAITING_CONFIRM → REJECTED)
    */
-  async rejectTicket(ticketId: string, reason: string): Promise<void> {
-    await apiClient.post(`/tickets/${ticketId}/reject`, { reason });
+  async rejectTicket(ticketId: string, reject_reason: string, assignee?: string): Promise<Ticket> {
+    const data: RejectTicketRequest = { reject_reason, assignee };
+    const response = await apiClient.post<Ticket>(`/api/v1/tickets/${ticketId}/reject`, data);
+    return response.data;
   },
 
   /**
-   * Request re-analysis (WAITING_CONFIRM → ANALYZING)
+   * Retry ticket analysis (WAITING_CONFIRM → ANALYZING)
    */
-  async reanalyzeTicket(ticketId: string): Promise<void> {
-    await apiClient.post(`/tickets/${ticketId}/reanalyze`);
+  async retryTicket(ticketId: string): Promise<Ticket> {
+    const response = await apiClient.post<Ticket>(`/api/v1/tickets/${ticketId}/retry`);
+    return response.data;
+  },
+
+  /**
+   * Complete manual ticket (MANUAL_REQUIRED → DONE)
+   */
+  async completeManualTicket(ticketId: string, manual_resolution: string, assignee?: string): Promise<Ticket> {
+    const data = { manual_resolution, assignee };
+    const response = await apiClient.post<Ticket>(`/api/v1/tickets/${ticketId}/complete`, data);
+    return response.data;
   },
 };

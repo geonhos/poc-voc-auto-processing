@@ -2,7 +2,7 @@
  * Mock Data for Design Review
  */
 
-import { Ticket } from '../types/ticket.types';
+import type { Ticket } from '../types/ticket.types';
 
 export const mockTickets: Ticket[] = [
   {

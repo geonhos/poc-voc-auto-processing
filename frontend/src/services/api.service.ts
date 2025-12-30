@@ -2,7 +2,7 @@
  * Base API Service
  */
 
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { type AxiosInstance, type AxiosError } from 'axios';
 
 const BASE_URL = 'http://localhost:8000';
 

@@ -3,14 +3,10 @@
  * Handles fetching ticket, polling, and admin actions
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ticketService } from '../services/ticket.service';
-import { Ticket } from '../types/ticket.types';
-import { mockTickets } from '../mocks/mockData';
-
-// Use mock data for design review
-const USE_MOCK_DATA = true;
+import type { Ticket } from '../types/ticket.types';
 
 export const useTicketDetail = (ticketId: string) => {
   const navigate = useNavigate();
@@ -18,23 +14,19 @@ export const useTicketDetail = (ticketId: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchTicket = async () => {
     try {
       setError(null);
+      const data = await ticketService.getTicket(ticketId);
+      setTicket(data);
 
-      if (USE_MOCK_DATA) {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 300));
-        const mockTicket = mockTickets.find(t => t.ticket_id === ticketId);
-        if (mockTicket) {
-          setTicket(mockTicket);
-        } else {
-          setError('티켓을 찾을 수 없습니다');
-        }
+      // Setup polling if status is ANALYZING
+      if (data.status === 'ANALYZING') {
+        startPolling();
       } else {
-        const data = await ticketService.getTicket(ticketId);
-        setTicket(data);
+        stopPolling();
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '티켓을 불러오는데 실패했습니다');
@@ -43,21 +35,34 @@ export const useTicketDetail = (ticketId: string) => {
     }
   };
 
+  const startPolling = () => {
+    if (pollingIntervalRef.current) return;
+
+    pollingIntervalRef.current = setInterval(() => {
+      fetchTicket();
+    }, 3000); // Poll every 3 seconds
+  };
+
+  const stopPolling = () => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+  };
+
   useEffect(() => {
     fetchTicket();
 
-    // Auto-refresh every 5 seconds
-    const interval = setInterval(() => {
-      fetchTicket();
-    }, 5000);
-
-    return () => clearInterval(interval);
+    return () => {
+      stopPolling();
+    };
   }, [ticketId]);
 
-  const handleApprove = async () => {
-    setActionLoading('approve');
+  const handleConfirm = async (assignee?: string) => {
+    setActionLoading('confirm');
     try {
-      await ticketService.approveTicket(ticketId);
+      const updatedTicket = await ticketService.confirmTicket(ticketId, assignee);
+      setTicket(updatedTicket);
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : '승인 처리 중 오류가 발생했습니다');
@@ -66,10 +71,11 @@ export const useTicketDetail = (ticketId: string) => {
     }
   };
 
-  const handleReject = async (reason: string) => {
+  const handleReject = async (reason: string, assignee?: string) => {
     setActionLoading('reject');
     try {
-      await ticketService.rejectTicket(ticketId, reason);
+      const updatedTicket = await ticketService.rejectTicket(ticketId, reason, assignee);
+      setTicket(updatedTicket);
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : '거부 처리 중 오류가 발생했습니다');
@@ -78,11 +84,13 @@ export const useTicketDetail = (ticketId: string) => {
     }
   };
 
-  const handleReanalyze = async () => {
-    setActionLoading('reanalyze');
+  const handleRetry = async () => {
+    setActionLoading('retry');
     try {
-      await ticketService.reanalyzeTicket(ticketId);
-      await fetchTicket(); // Refresh immediately
+      const updatedTicket = await ticketService.retryTicket(ticketId);
+      setTicket(updatedTicket);
+      // Start polling since status changed to ANALYZING
+      startPolling();
     } catch (err) {
       setError(err instanceof Error ? err.message : '재분석 요청 중 오류가 발생했습니다');
     } finally {
@@ -95,9 +103,9 @@ export const useTicketDetail = (ticketId: string) => {
     isLoading,
     error,
     actionLoading,
-    handleApprove,
+    handleConfirm,
     handleReject,
-    handleReanalyze,
+    handleRetry,
     refetch: fetchTicket,
   };
 };

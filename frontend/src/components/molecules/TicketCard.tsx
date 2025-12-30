@@ -3,7 +3,7 @@
  */
 
 import { Link } from 'react-router-dom';
-import { Ticket } from '../../types/ticket.types';
+import type { Ticket } from '../../types/ticket.types';
 import { Badge } from '../atoms/Badge';
 import { format } from 'date-fns';
 import './TicketCard.css';

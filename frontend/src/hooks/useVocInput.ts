@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { vocService } from '../services/voc.service';
-import { Channel } from '../types/ticket.types';
+import type { Channel } from '../types/ticket.types';
 
 interface VocFormData {
   customerName: string;
@@ -73,9 +73,15 @@ export const useVocInput = () => {
     setIsSubmitting(true);
 
     try {
-      // For design review, just navigate to mock ticket
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      navigate(`/tickets/VOC-20240115-0001`);
+      const response = await vocService.createVoc({
+        raw_voc: formData.rawVoc,
+        customer_name: formData.customerName,
+        channel: formData.channel,
+        received_at: formData.receivedAt,
+      });
+
+      // Navigate to the created ticket
+      navigate(`/tickets/${response.ticket_id}`);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : '요청 처리 중 오류가 발생했습니다');
     } finally {

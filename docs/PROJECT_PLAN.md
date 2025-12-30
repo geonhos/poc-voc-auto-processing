@@ -368,46 +368,46 @@ React 기반 관리자 UI 구현
 ### 작업 항목
 
 #### 4.1 프로젝트 설정
-- [ ] Vite + React + TypeScript 프로젝트 생성
-- [ ] 의존성 설치 (React Router, Axios, etc.)
-- [ ] 프로젝트 구조 설정
+- [x] Vite + React + TypeScript 프로젝트 생성
+- [x] 의존성 설치 (React Router, Axios, etc.)
+- [x] 프로젝트 구조 설정
 
 #### 4.2 공통 컴포넌트
-- [ ] Layout (Header, Navigation)
-- [ ] 상태 Badge 컴포넌트
-- [ ] 긴급도 표시 컴포넌트
-- [ ] 로딩/에러 상태 컴포넌트
+- [x] Layout (Header, Navigation)
+- [x] 상태 Badge 컴포넌트
+- [x] 긴급도 표시 컴포넌트
+- [x] 로딩/에러 상태 컴포넌트
 
 #### 4.3 VOC 입력 화면 (`/voc/new`)
-- [ ] VOC 입력 폼 구현
-- [ ] 폼 유효성 검증
-- [ ] API 연동 (POST /voc)
-- [ ] 성공 시 Ticket 상세로 이동
+- [x] VOC 입력 폼 구현
+- [x] 폼 유효성 검증
+- [x] API 연동 (POST /voc)
+- [x] 성공 시 Ticket 상세로 이동
 
 #### 4.4 Ticket 목록 화면 (`/tickets`)
-- [ ] Ticket 목록 표시
+- [x] Ticket 목록 표시
 - [ ] 상태별 필터링
 - [ ] 긴급도별 정렬
 - [ ] 페이지네이션
-- [ ] API 연동 (GET /tickets)
+- [x] API 연동 (GET /tickets)
 
 #### 4.5 Ticket 상세 화면 (`/tickets/:id`)
-- [ ] VOC 원문 표시
-- [ ] 정규화 결과 표시
-- [ ] Agent 분석 결과 표시 (판단 근거, 제외 사유)
-- [ ] 해결안 표시 (유형별)
+- [x] VOC 원문 표시
+- [x] 정규화 결과 표시
+- [x] Agent 분석 결과 표시 (판단 근거, 제외 사유)
+- [x] 해결안 표시 (유형별)
 - [ ] 관리자 액션 버튼 (승인/거부/재분석)
 - [ ] 거부 사유 모달
 - [ ] 수동 처리 완료 폼 (MANUAL_REQUIRED)
-- [ ] 상태별 화면 분기
+- [x] 상태별 화면 분기
 
 #### 4.6 상태 폴링
-- [ ] ANALYZING 상태에서 자동 새로고침
-- [ ] 분석 완료 시 UI 갱신
+- [x] ANALYZING 상태에서 자동 새로고침
+- [x] 분석 완료 시 UI 갱신
 
 #### 4.7 테스트
-- [ ] 컴포넌트 단위 테스트
-- [ ] 화면 통합 테스트
+- [x] 컴포넌트 단위 테스트
+- [x] 화면 통합 테스트 (Playwright)
 
 ### 산출물
 ```
@@ -593,9 +593,9 @@ Phase 3 (Solver Agent + RAG)        │
 - [ ] 해결안 생성 확인 (유사 케이스 참조 포함)
 
 ### Phase 4 완료 기준
-- [ ] 3개 화면 모두 동작
-- [ ] API 연동 완료
-- [ ] 관리자 액션 동작
+- [x] 3개 화면 모두 동작
+- [x] API 연동 완료
+- [ ] 관리자 액션 동작 (승인/거부/재분석 - 추후 구현)
 
 ### Phase 5 완료 기준
 - [ ] E2E 시나리오 전체 통과

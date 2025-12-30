@@ -87,7 +87,8 @@ export interface TicketFilters {
 
 export interface TicketListResponse {
   tickets: Ticket[];
-  total: number;
+  total_count: number;
   page: number;
   limit: number;
+  total_pages: number;
 }

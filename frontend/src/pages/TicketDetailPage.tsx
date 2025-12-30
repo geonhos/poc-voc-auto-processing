@@ -2,49 +2,61 @@
  * Ticket Detail Page
  */
 
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useTicketDetail } from '../hooks/useTicketDetail';
+import { Loading } from '../components/atoms/Loading';
 import '../components/atoms/Badge.css';
 import './TicketDetailPage.css';
 
-const mockTicket = {
-  ticket_id: 'VOC-20240115-0001',
-  status: 'WAITING_CONFIRM',
-  customer_name: '김철수',
-  channel: 'email',
-  raw_voc: '어제 밤에 카드 결제를 했는데 PG사에서 결제 실패 문자가 왔어요. 근데 제 카드에서는 빠져나갔거든요? 이거 확인 좀 해주세요.',
-  created_at: '2024-01-15T09:30:00',
-  analyzed_at: '2024-01-15T09:31:00',
-  urgency: 'high',
-  summary: 'PG 결제 API 타임아웃으로 인한 결제 실패',
-  affected_system: 'PG결제시스템',
-  decision_confidence: 0.85,
-  root_cause: '외부 결제 API 타임아웃으로 인한 결제 실패. PaymentGateway 응답 시간 12.3초 (임계값 5초 초과). 내부 로직 정상 완료 후 외부 호출 단계에서 실패. 최근 7일간 동일 패턴 3건 발생.',
-  action_title: '연동사 문의',
-  action_description: 'PaymentGateway 담당자에게 API 타임아웃 증가 현상에 대한 문의가 필요합니다.',
-};
-
 export const TicketDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
 
-  const confidence = Math.round((mockTicket.decision_confidence || 0) * 100);
+  const {
+    ticket,
+    isLoading,
+    error,
+    actionLoading,
+    handleConfirm,
+    handleReject,
+    handleRetry,
+  } = useTicketDetail(id || '');
 
-  const handleApprove = () => {
-    alert('승인되었습니다');
-    navigate('/');
+  if (isLoading) {
+    return (
+      <div className="page-container">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (error || !ticket) {
+    return (
+      <div className="page-container">
+        <div className="error-message">{error || '티켓을 찾을 수 없습니다'}</div>
+      </div>
+    );
+  }
+
+  const confidence = Math.round((ticket.decision_confidence || 0) * 100);
+
+  const onConfirmClick = () => {
+    handleConfirm();
   };
 
-  const handleReject = () => {
+  const onRejectClick = () => {
     if (rejectReason.trim().length === 0) {
       alert('거부 사유를 입력해주세요');
       return;
     }
-    alert('거부되었습니다');
+    handleReject(rejectReason);
     setRejectModalOpen(false);
-    navigate('/');
+  };
+
+  const onRetryClick = () => {
+    handleRetry();
   };
 
   return (
@@ -55,20 +67,20 @@ export const TicketDetailPage = () => {
 
       {/* Ticket Header Card */}
       <div className="ticket-header-card">
-        <h2 className="ticket-id-large">{mockTicket.ticket_id}</h2>
+        <h2 className="ticket-id-large">{ticket.ticket_id}</h2>
         <div className="ticket-header-meta">
-          <span className={`badge badge-status badge-${mockTicket.status}`}>
-            {mockTicket.status}
+          <span className={`badge badge-status badge-${ticket.status}`}>
+            {ticket.status}
           </span>
-          {mockTicket.urgency && (
-            <span className={`badge badge-urgency badge-${mockTicket.urgency}`}>
-              {mockTicket.urgency}
+          {ticket.urgency && (
+            <span className={`badge badge-urgency badge-${ticket.urgency}`}>
+              {ticket.urgency}
             </span>
           )}
         </div>
         <div className="ticket-timestamps">
-          생성: {new Date(mockTicket.created_at).toLocaleString('ko-KR')}
-          {mockTicket.analyzed_at && ` | 분석: ${new Date(mockTicket.analyzed_at).toLocaleString('ko-KR')}`}
+          생성: {new Date(ticket.created_at).toLocaleString('ko-KR')}
+          {ticket.analyzed_at && ` | 분석: ${new Date(ticket.analyzed_at).toLocaleString('ko-KR')}`}
         </div>
       </div>
 
@@ -76,14 +88,14 @@ export const TicketDetailPage = () => {
       <section className="voc-section">
         <h3>📝 VOC 원문</h3>
         <div className="voc-meta">
-          <span>고객명: {mockTicket.customer_name}</span>
+          <span>고객명: {ticket.customer_name}</span>
           <span>|</span>
-          <span>채널: {mockTicket.channel}</span>
+          <span>채널: {ticket.channel}</span>
         </div>
         <div className="voc-meta">
-          <span>접수: {new Date(mockTicket.created_at).toLocaleString('ko-KR')}</span>
+          <span>접수: {new Date(ticket.created_at).toLocaleString('ko-KR')}</span>
         </div>
-        <div className="voc-content">{mockTicket.raw_voc}</div>
+        <div className="voc-content">{ticket.raw_voc}</div>
       </section>
 
       {/* Agent 분석 결과 */}
@@ -102,9 +114,9 @@ export const TicketDetailPage = () => {
           </span>
         </div>
 
-        {mockTicket.affected_system && (
+        {ticket.affected_system && (
           <div className="affected-system">
-            영향 시스템: <span>{mockTicket.affected_system}</span>
+            영향 시스템: <span>{ticket.affected_system}</span>
           </div>
         )}
       </section>
@@ -112,33 +124,49 @@ export const TicketDetailPage = () => {
       {/* 판단 요약 */}
       <section className="summary-section">
         <h3>📋 판단 요약</h3>
-        <p>{mockTicket.summary}</p>
+        <p>{ticket.summary}</p>
       </section>
 
       {/* 판단 근거 */}
-      <section className="evidence-section">
-        <h3>✅ 판단 근거</h3>
-        <p>{mockTicket.root_cause}</p>
-      </section>
+      {ticket.decision_reason && (
+        <section className="evidence-section">
+          <h3>✅ 판단 근거</h3>
+          <p>{ticket.decision_reason.root_cause_analysis || ticket.decision_reason.evidence_summary || JSON.stringify(ticket.decision_reason)}</p>
+        </section>
+      )}
 
       {/* 제안 액션 */}
-      <section className="action-section">
-        <h3>💡 제안 액션: {mockTicket.action_title}</h3>
-        <p>{mockTicket.action_description}</p>
-      </section>
+      {ticket.action_proposal && (
+        <section className="action-section">
+          <h3>💡 제안 액션: {ticket.action_proposal.title}</h3>
+          <p>{ticket.action_proposal.description}</p>
+        </section>
+      )}
 
       {/* Admin Actions */}
-      {mockTicket.status === 'WAITING_CONFIRM' && (
+      {ticket.status === 'WAITING_CONFIRM' && (
         <div className="admin-actions">
           <h3>관리자 액션</h3>
           <div className="action-buttons">
-            <button className="btn-approve" onClick={handleApprove}>
+            <button
+              className="btn-approve"
+              onClick={onConfirmClick}
+              disabled={actionLoading !== null}
+            >
               ✓ 승인
             </button>
-            <button className="btn-reject" onClick={() => setRejectModalOpen(true)}>
+            <button
+              className="btn-reject"
+              onClick={() => setRejectModalOpen(true)}
+              disabled={actionLoading !== null}
+            >
               ✗ 거부
             </button>
-            <button className="btn-reanalyze" onClick={() => alert('재분석 요청')}>
+            <button
+              className="btn-reanalyze"
+              onClick={onRetryClick}
+              disabled={actionLoading !== null}
+            >
               ↻ 재분석
             </button>
           </div>
@@ -175,7 +203,7 @@ export const TicketDetailPage = () => {
               <button className="btn-secondary" onClick={() => setRejectModalOpen(false)}>
                 취소
               </button>
-              <button className="btn-danger" onClick={handleReject}>
+              <button className="btn-danger" onClick={onRejectClick}>
                 거부 확인
               </button>
             </div>
