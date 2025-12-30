@@ -17,7 +17,7 @@ export const TicketCard = ({ ticket }: TicketCardProps) => {
     ? format(new Date(ticket.created_at), 'yyyy-MM-dd HH:mm')
     : '';
 
-  const summary = ticket.decision_reason?.summary || '분석 대기 중...';
+  const summary = ticket.summary || '분석 대기 중...';
   const confidence = ticket.decision_confidence
     ? Math.round(ticket.decision_confidence * 100)
     : null;

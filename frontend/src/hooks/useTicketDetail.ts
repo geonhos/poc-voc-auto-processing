@@ -14,7 +14,7 @@ export const useTicketDetail = (ticketId: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchTicket = async () => {
     try {
@@ -98,6 +98,19 @@ export const useTicketDetail = (ticketId: string) => {
     }
   };
 
+  const handleCompleteManual = async (resolution: string, assignee?: string) => {
+    setActionLoading('complete');
+    try {
+      const updatedTicket = await ticketService.completeManualTicket(ticketId, resolution, assignee);
+      setTicket(updatedTicket);
+      navigate('/');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '수동 처리 완료 중 오류가 발생했습니다');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   return {
     ticket,
     isLoading,
@@ -106,6 +119,7 @@ export const useTicketDetail = (ticketId: string) => {
     handleConfirm,
     handleReject,
     handleRetry,
+    handleCompleteManual,
     refetch: fetchTicket,
   };
 };

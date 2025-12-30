@@ -13,6 +13,7 @@ export const TicketDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
+  const [manualResolution, setManualResolution] = useState('');
 
   const {
     ticket,
@@ -22,6 +23,7 @@ export const TicketDetailPage = () => {
     handleConfirm,
     handleReject,
     handleRetry,
+    handleCompleteManual,
   } = useTicketDetail(id || '');
 
   if (isLoading) {
@@ -168,6 +170,44 @@ export const TicketDetailPage = () => {
               disabled={actionLoading !== null}
             >
               ↻ 재분석
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Manual Resolution Section */}
+      {ticket.status === 'MANUAL_REQUIRED' && (
+        <div className="manual-resolution-section">
+          <div className="manual-resolution-header">
+            <span className="warning-icon">⚠️</span>
+            <div>
+              <h3>수동 처리 필요</h3>
+              <p>자동 분석이 불가하여 수동 처리가 필요합니다.</p>
+            </div>
+          </div>
+          <div className="manual-resolution-form">
+            <label>
+              해결 내용 <span className="required-mark">*</span>
+            </label>
+            <textarea
+              value={manualResolution}
+              onChange={(e) => setManualResolution(e.target.value)}
+              placeholder="수동으로 처리한 내용을 입력하세요..."
+              maxLength={2000}
+            />
+            <div className="char-count">({manualResolution.length}/2000)</div>
+            <button
+              className="btn-complete"
+              onClick={() => {
+                if (manualResolution.trim().length === 0) {
+                  alert('해결 내용을 입력해주세요');
+                  return;
+                }
+                handleCompleteManual(manualResolution);
+              }}
+              disabled={actionLoading !== null || manualResolution.trim().length === 0}
+            >
+              {actionLoading === 'complete' ? '처리 중...' : '처리 완료'}
             </button>
           </div>
         </div>

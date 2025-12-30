@@ -12,6 +12,9 @@ export const apiClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  paramsSerializer: {
+    indexes: null, // Send arrays as status=A&status=B instead of status[]=A&status[]=B
+  },
 });
 
 // Response interceptor for error handling
